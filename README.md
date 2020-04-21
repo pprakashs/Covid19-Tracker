@@ -40,5 +40,5 @@ all countries
 
 main class name "covid19-wdiget-traker"
 
-<div class="covid19-wdiget-traker" data-theme="card" data-timeout="100" data-country="global"></div>
+`<div class="covid19-wdiget-traker" data-theme="card" data-timeout="100" data-country="global"></div>`
 
