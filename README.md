@@ -24,8 +24,7 @@ Your app is ready to be deployed!
 
 #### `data-theme`
 
-options
-card/bar-chart/line-chart
+options: card/bar-chart/line-chart
 
 #### `data-timeout`
 
