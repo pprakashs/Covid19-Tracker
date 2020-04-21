@@ -22,21 +22,21 @@ Your app is ready to be deployed!
 
 ### `options`
 
-### `data-theme`
+#### `data-theme`
 
 options
 card/bar-chart/line-chart
 
-### `data-timeout`
+#### `data-timeout`
 
 default: 15(mins)
 
-### `data-country`
+#### `data-country`
 
 all countries
 np,us,all......
 
-### `html format`
+#### `html format`
 
 main class name "covid19-wdiget-traker"
 
