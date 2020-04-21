@@ -34,7 +34,7 @@ default: 15(mins)
 #### `data-country`
 
 all countries
-np,us,all......
+(np,us,all...)
 
 #### `html format`
 
