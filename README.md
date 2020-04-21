@@ -24,7 +24,8 @@ Your app is ready to be deployed!
 
 ## `data-theme`
 
-'card/bar-chart/line-chart' 
+options
+card/bar-chart/line-chart
 
 ## `data-timeout`
 
@@ -32,7 +33,8 @@ default: 15(mins)
 
 ## `data-country`
 
-'np,us,all......'
+all countries
+np,us,all......
 
 ## `html format`
 
