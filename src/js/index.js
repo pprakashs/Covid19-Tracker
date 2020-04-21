@@ -201,7 +201,7 @@ class Covid19 {
 
 }
 
-document.addEventListener('DOMContentLoaded', async e => {
+document.addEventListener('DOMContentLoaded', e => {
     //get the main DOM element
     const element = document.querySelectorAll('.covid19-wdiget-traker');
 
