@@ -48,11 +48,11 @@ class Covid19 {
 
     //creating chart setting
     chartSetting(ctx, data, name, type) {
-        let chartType, chartData, options, cases, confirmed, recovered, deaths;
+        console.log(data)
+        let chartType, chartData, options, cases, confirmed, recovered, deaths, countryName = name;
 
         if (this.country === 'global' && this.theme === 'line-chart') {
             cases = data;
-
         } else if (this.country === 'global') {
             confirmed = data.confirmed.value
             recovered = data.recovered.value
@@ -66,6 +66,8 @@ class Covid19 {
             confirmed = data.latest_data.confirmed
             recovered = data.latest_data.recovered
             deaths = data.latest_data.deaths
+
+            countryName = data.name
         }
         type === 'bar-chart' ? chartType = 'bar' : chartType = 'line'
         // const { confirmed, recovered, deaths } = data;
@@ -85,7 +87,7 @@ class Covid19 {
                 legend: false,
                 title: {
                     display: true,
-                    text: `${name.toUpperCase()} Chart`,
+                    text: `${countryName.toUpperCase()} Chart`,
                 },
             }
         } else {
@@ -145,7 +147,7 @@ class Covid19 {
                 responsive: true,
                 title: {
                     display: true,
-                    text: `${name.toUpperCase()} Chart`,
+                    text: `${countryName.toUpperCase()} Chart`,
                 },
             }
         }
