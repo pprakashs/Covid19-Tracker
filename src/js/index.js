@@ -1,10 +1,9 @@
 
 import Chart from 'chart.js';
 
-
 class Covid19 {
     constructor(DOMElement, theme = 'card', timeout = 15, country) {
-        this.theme = theme; // ['card', 'chart']
+        this.theme = theme; // ['card', 'bar-chart', line-chart]
         this.timeout = timeout;
         this.country = country
         this.apiPath = 'https://covid19.mathdro.id/api';
@@ -12,14 +11,24 @@ class Covid19 {
         this.DOMElement = DOMElement
     }
 
+    //formatting the number
     formatNumber(num) {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     }
 
+    //fetching the data using API
     async fetchData() {
-        let url = this.apiPath;
+        let url;
         //checking if global or not
-        this.country !== 'global' ? url = `${this.apiPathCountry}/${this.country}` : '';
+        if (this.country === 'global' && this.theme === "bar-chart") {
+            url = this.apiPath
+        } else if (this.country === 'global' && this.theme === "card") {
+            url = this.apiPath
+        } else if (this.country === 'global' && this.theme === "line-chart") {
+            url = `${this.apiPath}/daily`
+        } else {
+            url = `${this.apiPathCountry}/${this.country}`
+        }
 
         const req = await fetch(url);
 
@@ -37,11 +46,18 @@ class Covid19 {
         }
     }
 
+    //creating chart setting
     chartSetting(ctx, data, name, type) {
-        let chartType, datas, options, cases, confirmed, recovered, deaths;
+        let chartType, chartData, options, cases, confirmed, recovered, deaths;
 
-        if (this.country !== 'global') {
+        if (this.country === 'global' && this.theme === 'line-chart') {
+            cases = data;
 
+        } else if (this.country === 'global') {
+            confirmed = data.confirmed.value
+            recovered = data.recovered.value
+            deaths = data.deaths.value
+        } else {
             //short cases by date
             cases = data.timeline.sort(function (a, b) {
                 var dateA = new Date(a.date), dateB = new Date(b.date);
@@ -50,16 +66,11 @@ class Covid19 {
             confirmed = data.latest_data.confirmed
             recovered = data.latest_data.recovered
             deaths = data.latest_data.deaths
-        } else {
-            confirmed = data.confirmed.value
-            recovered = data.recovered.value
-            deaths = data.deaths.value
         }
-
         type === 'bar-chart' ? chartType = 'bar' : chartType = 'line'
         // const { confirmed, recovered, deaths } = data;
         if (this.theme === 'bar-chart') {
-            datas = {
+            chartData = {
                 labels: [`Confirmed ${this.formatNumber(confirmed)}`, `Recovered ${this.formatNumber(recovered)}`, `Death ${this.formatNumber(deaths)}`],
                 datasets: [{
                     label: 'People',
@@ -78,28 +89,52 @@ class Covid19 {
                 },
             }
         } else {
-            datas = {
-                labels: cases.map((el) => el.date),
+            chartData = {
+                labels: cases.map((el) => {
+                    if (this.country === 'global' && this.theme === 'line-chart') {
+                        return el.reportDate
+                    } else {
+                        return el.date
+                    }
+                }),
                 datasets: [
                     {
                         label: 'Infected',
                         backgroundColor: 'rgb(244, 195, 99)',
                         borderColor: 'rgb(244, 195, 99)',
-                        data: cases.map((el) => el.confirmed),
+                        data: cases.map((el) => {
+                            if (this.country === 'global' && this.theme === 'line-chart') {
+                                return el.confirmed.total
+                            } else {
+                                return el.confirmed
+                            }
+                        }),
                         fill: false,
                     },
                     {
                         label: 'Recovered',
                         backgroundColor: 'rgb(96, 187, 105)',
                         borderColor: 'rgb(96, 187, 105)',
-                        data: cases.map((el) => el.recovered),
+                        data: cases.map((el) => {
+                            if (this.country === 'global' && this.theme === 'line-chart') {
+                                return el.recovered.total
+                            } else {
+                                return el.recovered
+                            }
+                        }),
                         fill: false,
                     },
                     {
                         label: 'Death',
                         backgroundColor: 'rgb(118, 118, 118)',
                         borderColor: 'rgb(118, 118, 118)',
-                        data: cases.map((el) => el.deaths),
+                        data: cases.map((el) => {
+                            if (this.country === 'global' && this.theme === 'line-chart') {
+                                return el.deaths.total
+                            } else {
+                                return el.deaths
+                            }
+                        }),
                         fill: false,
                     },
                 ],
@@ -117,7 +152,7 @@ class Covid19 {
 
         new Chart(ctx, {
             type: chartType,
-            data: datas,
+            data: chartData,
             options
         });
     }
@@ -172,6 +207,7 @@ class Covid19 {
         return output
     }
 
+    //set the ui
     setUI(data, name) {
         // setting element to DOM
         if (this.theme === 'card') {
@@ -181,16 +217,16 @@ class Covid19 {
         }
     }
 
+    //set the data
     async setData() {
         const data = await this.fetchData();
         let name
         this.country === 'global' ? name = 'Global' : name = this.country
         this.setUI(data, name)
-
     }
 
     get init() {
-        //setting timeout value for 
+        //setting timeout value for interval 
         let time = this.timeout;
         time < 15 ? time = 15 : time = time;
         const timeout = time * 60 * 1000;
@@ -203,7 +239,7 @@ class Covid19 {
 
 document.addEventListener('DOMContentLoaded', e => {
     //get the main DOM element
-    const element = document.querySelectorAll('.covid19-wdiget-traker');
+    const element = document.querySelectorAll('.covid19-wdiget-tracker');
 
     element.forEach(el => {
         //getting value from data attributes
@@ -211,10 +247,10 @@ document.addEventListener('DOMContentLoaded', e => {
         const timeout = el.getAttribute('data-timeout');
         const country = el.getAttribute('data-country');
 
-        const covid = new Covid19(el, theme, timeout, country);
+        const Covid = new Covid19(el, theme, timeout, country);
 
         //init
-        covid.init;
+        Covid.init;
     });
 })
 
