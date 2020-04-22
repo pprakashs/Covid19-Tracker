@@ -36,6 +36,10 @@ default: 15(mins)
 all countries
 (np,us,all...)
 
+#### `data-color`
+
+"#000, #252, #532"
+
 #### `html format`
 
 main class name "covid19-wdiget-traker"

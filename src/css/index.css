@@ -1,14 +1,60 @@
+.covid19-wdiget-tracker{
+    font-family: Arial, Helvetica, sans-serif;
+}
+.covid19-wdiget-tracker div::before{
+    box-sizing: inherit;
+}
+.covid19-wdiget-tracker div::after{
+    box-sizing: inherit;
+}
+.covid19-wdiget-tracker .covid19-columns{
+    display: flex;
+    display: -ms-flexbox;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-left: -.4rem;
+    margin-right: -.4rem;
+}
+.covid19-wdiget-tracker .covid19-column{
+    -ms-flex: 1;
+    flex: 1;
+    max-width: 100%;
+    padding-left: .4rem;
+    padding-right: .4rem;
+}
+.covid19-wdiget-tracker h4{
+    font-size: 20px;
+    margin: 0 0 10px;
+    padding: 0;;
+}
+.covid19-wdiget-tracker h5{
+    font-size: 28px;
+    margin: 0;
+    padding: 0;
+}
+
+.covid19-wdiget-tracker .covid19-text-center{
+    text-align: center;
+}
+
 @media only screen and (max-width: 770px) {
-    .h4{
+    .covid19-wdiget-tracker h4{
         font-size: 18px!important;
     }
-    .h1, .h2{
-        font-size: 25px!important;
+    .covid19-wdiget-tracker h5{
+        font-size: 22px!important;
     }
   }
 
   @media only screen and (max-width: 600px) {
-    .column{
-        margin-bottom: 15px;;
+    .covid19-wdiget-tracker .covid19-columns{
+        display: block;
+        
+    }
+    .covid19-columns .covid19-column{
+        margin-top: 25px;
+    }
+    .covid19-columns .covid19-column:first-child{
+        margin-top: 0;;
     }
   }

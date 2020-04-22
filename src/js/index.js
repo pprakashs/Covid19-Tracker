@@ -2,13 +2,14 @@
 import Chart from 'chart.js';
 
 class Covid19 {
-    constructor(DOMElement, theme = 'card', timeout = 15, country) {
-        this.theme = theme; // ['card', 'bar-chart', line-chart]
-        this.timeout = timeout;
-        this.country = country
+    constructor(DOMElement, theme, timeout, country, color) {
+        this.DOMElement = DOMElement
+        this.theme = theme || card; // ['card', 'bar-chart', line-chart]
+        this.timeout = timeout || 30;
+        this.country = country;
+        this.color = color ? color.split(', ') : ['#F4C363', '#60BB69', '#767676'];
         this.apiPath = 'https://covid19.mathdro.id/api';
         this.apiPathCountry = 'https://corona-api.com/countries';
-        this.DOMElement = DOMElement
     }
 
     //formatting the number
@@ -18,7 +19,7 @@ class Covid19 {
 
     //fetching the data using API
     async fetchData() {
-        let url;
+        let url, res;
         //checking if global or not
         if (this.country === 'global' && this.theme === "bar-chart") {
             url = this.apiPath
@@ -34,21 +35,20 @@ class Covid19 {
 
         if (this.country !== 'global') {
             const { data } = await req.json();
-            const res = {
+            res = {
                 name: data.name,
                 latest_data: data.latest_data,
                 timeline: data.timeline
             }
-            return res
         } else {
-            const data = await req.json();
-            return data
+            res = await req.json();
         }
+        return res;
+
     }
 
     //creating chart setting
     chartSetting(ctx, data, name, type) {
-        console.log(data)
         let chartType, chartData, options, cases, confirmed, recovered, deaths, countryName = name;
 
         if (this.country === 'global' && this.theme === 'line-chart') {
@@ -78,7 +78,7 @@ class Covid19 {
                     label: 'People',
                     data: [confirmed, recovered, deaths],
                     borderWidth: 1,
-                    backgroundColor: ['rgb(244, 195, 99)', 'rgb(96, 187, 105)', 'rgb(118, 118, 118)']
+                    backgroundColor: [this.color[0], this.color[1], this.color[2]]
                 }]
             }
             options = {
@@ -86,8 +86,7 @@ class Covid19 {
                 responsive: true,
                 legend: false,
                 title: {
-                    display: true,
-                    text: `${countryName.toUpperCase()} Chart`,
+                    display: false,
                 },
             }
         } else {
@@ -102,8 +101,8 @@ class Covid19 {
                 datasets: [
                     {
                         label: 'Infected',
-                        backgroundColor: 'rgb(244, 195, 99)',
-                        borderColor: 'rgb(244, 195, 99)',
+                        backgroundColor: this.color[0],
+                        borderColor: this.color[0],
                         data: cases.map((el) => {
                             if (this.country === 'global' && this.theme === 'line-chart') {
                                 return el.confirmed.total
@@ -115,8 +114,8 @@ class Covid19 {
                     },
                     {
                         label: 'Recovered',
-                        backgroundColor: 'rgb(96, 187, 105)',
-                        borderColor: 'rgb(96, 187, 105)',
+                        backgroundColor: this.color[1],
+                        borderColor: this.color[1],
                         data: cases.map((el) => {
                             if (this.country === 'global' && this.theme === 'line-chart') {
                                 return el.recovered.total
@@ -128,8 +127,8 @@ class Covid19 {
                     },
                     {
                         label: 'Death',
-                        backgroundColor: 'rgb(118, 118, 118)',
-                        borderColor: 'rgb(118, 118, 118)',
+                        backgroundColor: this.color[2],
+                        borderColor: this.color[2],
                         data: cases.map((el) => {
                             if (this.country === 'global' && this.theme === 'line-chart') {
                                 return el.deaths.total
@@ -146,8 +145,7 @@ class Covid19 {
                 maintainAspectRatio: true,
                 responsive: true,
                 title: {
-                    display: true,
-                    text: `${countryName.toUpperCase()} Chart`,
+                    display: false,
                 },
             }
         }
@@ -165,20 +163,37 @@ class Covid19 {
         if (this.country === 'global' && this.theme === 'card') {
             const { confirmed, recovered, deaths } = data
             // card ui
-            output = `<div class="container col-9 text-center">
-            <h4 class="text-uppercase h5">${name}</h4>
-            <div class="columns">
-                <div class="column col-sm-12">
-                    <h5 class="text-primary h4">Confirmed</h5>
-                    <h5 class="text-primary h1">${this.formatNumber(confirmed.value)}</h5>
+            output = `<div class="covid19-text-center">
+            <div class="covid19-columns">
+                <div class="covid19-column">
+                    <h4 class="text-primary h4" style="color:${this.color[0]}!important">Confirmed</h4>
+                    <h5 class="text-primary h1" style="color:${this.color[0]}!important">${this.formatNumber(confirmed.value)}</h5>
                 </div>
-                <div class="column col-sm-12">
-                    <h5 class="text-success h4">Recovered</h5>
-                    <h5 class="text-success h1">${this.formatNumber(recovered.value)}</h5>
+                <div class="covid19-column">
+                    <h4 class="text-success h4" style="color:${this.color[1]}!important">Recovered</h4>
+                    <h5 class="text-success h1" style="color:${this.color[1]}!important">${this.formatNumber(recovered.value)}</h5>
                 </div>
-                <div class="column col-sm-12">
-                    <h5 class="text-error h4">Deaths</h5>
-                    <h5 class="text-error h1">${this.formatNumber(deaths.value)}</h5>
+                <div class="covid19-column">
+                    <h4 class="text-error h4" style="color:${this.color[2]}!important">Deaths</h4>
+                    <h5 class="text-error h1" style="color:${this.color[2]}!important">${this.formatNumber(deaths.value)}</h5>
+                </div>
+            </div></div>`;
+        } else if (this.country !== 'global' && this.theme === 'card') {
+            const { latest_data: { confirmed, recovered, deaths } } = data
+            // card ui
+            output = `<div class="covid19-text-center">
+            <div class="covid19-columns">
+                <div class="covid19-column">
+                <h4 class="text-primary h4" style="color:${this.color[0]}!important">Confirmed</h4>
+                    <h5 class="text-primary h1" style="color:${this.color[0]}!important">${this.formatNumber(confirmed)}</h5>
+                </div>
+                <div class="covid19-column">
+                    <h4 class="text-success h4" style="color:${this.color[1]}!important">Recovered</h4>
+                    <h5 class="text-success h1" style="color:${this.color[1]}!important">${this.formatNumber(recovered)}</h5>
+                </div>
+                <div class="covid19-column">
+                    <h4 class="text-error h4" style="color:${this.color[2]}!important">Deaths</h4>
+                    <h5 class="text-error h1" style="color:${this.color[2]}!important">${this.formatNumber(deaths)}</h5>
                 </div>
             </div></div>`;
         } else if (this.country === 'global' && this.theme === 'bar-chart') {
@@ -198,7 +213,7 @@ class Covid19 {
             createCanvas.className = "covid19-chart";
 
             const markup = document.createElement('div');
-            markup.className = "container col-9 text-center";
+            markup.className = "text-center";
             markup.appendChild(createCanvas)
 
             this.chartSetting(createCanvas, data, name, this.theme);
@@ -248,8 +263,9 @@ document.addEventListener('DOMContentLoaded', e => {
         const theme = el.getAttribute('data-theme');
         const timeout = el.getAttribute('data-timeout');
         const country = el.getAttribute('data-country');
+        const color = el.getAttribute('data-color');
 
-        const Covid = new Covid19(el, theme, timeout, country);
+        const Covid = new Covid19(el, theme, timeout, country, color);
 
         //init
         Covid.init;
