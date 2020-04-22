@@ -1,6 +1,6 @@
-.covid19-wdiget-tracker{
+/* .covid19-wdiget-tracker{
     font-family: Arial, Helvetica, sans-serif;
-}
+} */
 .covid19-wdiget-tracker div::before{
     box-sizing: inherit;
 }
